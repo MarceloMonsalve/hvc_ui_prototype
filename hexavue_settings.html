@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HexaVue Connect - Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(145deg, #1e40af, #1d4ed8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .logo-section {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo::before {
+            content: "⬡";
+            font-size: 28px;
+            color: #60a5fa;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #60a5fa;
+        }
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-left-color: #60a5fa;
+        }
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        .settings-section {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .user-section {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.1);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .user-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .user-details p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .top-bar {
+            background: white;
+            padding: 16px 32px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .top-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #059669;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #059669;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* Settings Content */
+        .content-area {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        
+        /* Settings Categories */
+        .settings-categories {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+        }
+        
+        .category-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        
+        .category-btn:hover {
+            background: #f8fafc;
+            color: #475569;
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        
+        /* Settings Panel */
+        .settings-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        
+        .panel-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        
+        .panel-description {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .panel-content {
+            padding: 32px;
+        }
+        
+        .setting-group {
+            margin-bottom: 32px;
+        }
+        
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .group-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f8fafc;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        
+        .setting-description {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .setting-control {
+            margin-left: 24px;
+        }
+        
+        /* Form Controls */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #3b82f6;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+        
+        .form-input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s ease;
+            min-width: 200px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s ease;
+            min-width: 200px;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Grid Layout for some settings */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .setting-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+        
+        .card-content {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        /* Table for lists */
+        .settings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .settings-table th,
+        .settings-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .settings-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 13px;
+            color: #475569;
+        }
+        
+        .settings-table td {
+            font-size: 14px;
+            color: #0f172a;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+        
+        .btn-edit {
+            background: #f59e0b;
+            color: white;
+            border: none;
+        }
+        
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+        }
+        
+        .btn-add {
+            background: #10b981;
+            color: white;
+            border: none;
+            margin-bottom: 16px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .panel-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo-section">
+                <div class="logo">
+                    HexaVue
+                    <div class="subtitle">Connect</div>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="hexavue-redesign.html" class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    OR Schedule
+                </a>
+                <a href="room_monitor_page.html" class="nav-item">
+                    <span class="nav-icon">📹</span>
+                    Room Monitor
+                </a>
+                <a href="media_export_page.html" class="nav-item">
+                    <span class="nav-icon">🎬</span>
+                    Media Export
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">🎛️</span>
+                    Remote Control
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    Analytics
+                </a>
+                <a href="hexavue_settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    Admin 
+                </a>
+            </div>
+            
+            <div class="user-section">
+                <div class="user-info">
+                    <div class="user-avatar">DR</div>
+                    <div class="user-details">
+                        <h4>Dr. Richardson</h4>
+                        <p>Chief of Surgery</p>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <h1 class="page-title">Settings</h1>
+                <div class="top-actions">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        All Systems Online
+                    </div>
+                    <button class="btn btn-secondary">Reset to Defaults</button>
+                    <button class="btn btn-primary">Save Changes</button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Settings Categories -->
+                <div class="settings-categories">
+                    <button class="category-btn active" data-category="configurations">Configurations</button>
+                    <button class="category-btn" data-category="features">Features</button>
+                    <button class="category-btn" data-category="campus">Campus</button>
+                    <button class="category-btn" data-category="checklist">Checklist</button>
+                    <button class="category-btn" data-category="users">Users</button>
+                    <button class="category-btn" data-category="operating-rooms">Operating Rooms</button>
+                    <button class="category-btn" data-category="ip-cameras">IP Cameras</button>
+                    <button class="category-btn" data-category="omni-view">Omni View</button>
+                    <button class="category-btn" data-category="coreview-desks">CoreView Desks</button>
+                </div>
+
+                <!-- Settings Panel -->
+                <div class="settings-panel">
+                    <!-- Configurations Panel -->
+                    <div class="settings-content" data-content="configurations">
+                        <div class="panel-header">
+                            <h2 class="panel-title">System Configurations</h2>
+                            <p class="panel-description">Configure core system settings and preferences</p>
+                        </div>
+                        <div class="panel-content">
+                            <div class="setting-group">
+                                <h3 class="group-title">General Settings</h3>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">System Language</div>
+                                        <div class="setting-description">Default language for the interface</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select class="form-select">
+                                            <option>English (US)</option>
+                                            <option>Spanish</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">Time Zone</div>
+                                        <div class="setting-description">System time zone for scheduling</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select class="form-select">
+                                            <option>Eastern Time (ET)</option>
+                                            <option>Central Time (CT)</option>
+                                            <option>Mountain Time (MT)</option>
+                                            <option>Pacific Time (PT)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">Auto-save Interval</div>
+                                        <div class="setting-description">Frequency of automatic data saves (minutes)</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        <input type="number" class="form-input" value="5" min="1" max="60">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-group">
+                                <h3 class="group-title">Security Settings</h3>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">Enable Two-Factor Authentication</div>
+                                        <div class="setting-description">Require 2FA for all user logins</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="toggle-switch active"></div>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">Session Timeout</div>
+                                        <div class="setting-description">Auto-logout after inactivity (minutes)</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        <input type="number" class="form-input" value="30" min="5" max="480">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features Panel -->
+                    <div class="settings-content" data-content="features" style="display: none;">
+                        <div class="panel-header">
+                            <h2 class="panel-title">Feature Management</h2>
+                            <p class="panel-description">Enable or disable system features and modules</p>
+                        </div>
+                        <div class="panel-content">
+                            <div class="settings-grid">
+                                <div class="setting-card">
+                                    <div class="card-title">Recording Features</div>
+                                    <div class="card-content">
+                                        <div class="setting-item">
+                                            <div class="setting-info">
+                                                <div class="setting-name">Auto-recording</div>
+                                            </div>
+                                            <div class="setting-control">
+                                                <div class="toggle-switch active"></div>
+                                            </div>
+                                        </div>
+                                        <div class="setting-item">
+                                            <div class="setting-info">
+                                                <div class="setting-name">Multi-camera sync</div>
+                                            </div>
+                                            <div class="setting-control">
+                                                <div class="toggle-switch active"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-card">
+                                    <div class="card-title">Analytics</div>
+                                    <div class="card-content">
+                                        <div class="setting-item">
+                                            <div class="setting-info">
+                                                <div class="setting-name">Real-time analytics</div>
+                                            </div>
+                                            <div class="setting-control">
+                                                <div class="toggle-switch active"></div>
+                                            </div>
+                                        </div>
+                                        <div class="setting-item">
+                                            <div class="setting-info">
+                                                <div class="setting-name">Performance tracking</div>
+                                            </div>
+                                            <div class="setting-control">
+                                                <div class="toggle-switch"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-card">
+                                    <div class="card-title">Remote Control</div>
+                                    <div class="card-content">
+                                        <div class="setting-item">
+                                            <div class="setting-info">
+                                                <div class="setting-name">Mobile access</div>
+                                            </div>
+                                            <div class="setting-control">
+                                                <div class="toggle-switch active"></div>
+                                            </div>
+                                        </div>
+                                        <div class="setting-item">
+                                            <div class="setting-info">
+                                                <div class="setting-name">Voice commands</div>
+                                            </div>
+                                            <div class="setting-control">
+                                                <div class="toggle-switch"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campus Panel -->
+                    <div class="settings-content" data-content="campus" style="display: none;">
+                        <div class="panel-header">
+                            <h2 class="panel-title">Campus Configuration</h2>
+                            <p class="panel-description">Manage campus locations and facility settings</p>
+                        </div>
+                        <div class="panel-content">
+                            <div class="setting-group">
+                                <h3 class="group-title">Campus Information</h3>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">Campus Name</div>
+                                        <div class="setting-description">Primary campus identifier</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        <input type="text" class="form-input" value="Metropolitan Medical Center">
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">Location</div>
+                                        <div class="setting-description">Campus address or location</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        <input type="text" class="form-input" value="123 Healthcare Blvd, Medical City">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-group">
+                                <h3 class="group-title">Building Configuration</h3>
+                                <button class="btn btn-add btn-small">+ Add Building</button>
+                                <table class="settings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Building Name</th>
+                                            <th>Floors</th>
+                                            <th>OR Count</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Main Surgery Wing</td>
+                                            <td>3</td>
+                                            <td>8</td>
+                                            <td>Active</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-edit btn-small">Edit</button>
+                                                    <button class="btn btn-delete btn-small">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Emergency Surgery</td>
+                                            <td>1</td>
+                                            <td>4</td>
+                                            <td>Active</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-edit btn-small">Edit</button>
+                                                    <button class="btn btn-delete btn-small">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users Panel -->
+                    <div class="settings-content" data-content="users" style="display: none;">
+                        <div class="panel-header">
+                            <h2 class="panel-title">User Management</h2>
+                            <p class="panel-description">Manage user accounts, roles, and permissions</p>
+                        </div>
+                        <div class="panel-content">
+                            <div class="setting-group">
+                                <h3 class="group-title">User Accounts</h3>
+                                <button class="btn btn-add btn-small">+ Add User</button>
+                                <table class="settings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Last Login</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Dr. Richardson</td>
+                                            <td>dr.richardson@hospital.com</td>
+                                            <td>Administrator</td>
+                                            <td>2 hours ago</td>
+                                            <td>Active</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-edit btn-small">Edit</button>
+                                                    <button class="btn btn-delete btn-small">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Dr. Morgan</td>
+                                            <td>dr.morgan@hospital.com</td>
+                                            <td>Surgeon</td>
+                                            <td>1 day ago</td>
+                                            <td>Active</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-edit btn-small">Edit</button>
+                                                    <button class="btn btn-delete btn-small">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operating Rooms Panel -->
+                    <div class="settings-content" data-content="operating-rooms" style="display: none;">
+                        <div class="panel-header">
+                            <h2 class="panel-title">Operating Room Configuration</h2>
+                            <p class="panel-description">Configure operating room settings and equipment</p>
+                        </div>
+                        <div class="panel-content">
+                            <div class="setting-group">
+                                <h3 class="group-title">Operating Rooms</h3>
+                                <button class="btn btn-add btn-small">+ Add Operating Room</button>
+                                <table class="settings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Room ID</th>
+                                            <th>Name</th>
+                                            <th>Specialty</th>
+                                            <th>Cameras</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>OR-001</td>
+                                            <td>OR 1 - Main Surgery</td>
+                                            <td>General Surgery</td>
+                                            <td>4</td>
+                                            <td>Online</td>
+                                            <td>
